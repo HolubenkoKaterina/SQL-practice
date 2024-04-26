@@ -1,0 +1,85 @@
+/*1. Используя функции, получите список всех сотрудников у которых в 
+имени есть буква 'b' (без учета регистра).*/
+
+SELECT first_name, last_name
+from employees
+where first_name like '%b%';
+
+/*2. Используя функции, получите список всех сотрудников у которых в 
+имени содержатся минимум 2 буквы 'a'*/
+
+SELECT first_name, last_name
+from employees
+where instr(first_name, 'a', 1, 2)> 0
+;
+
+/*3. Получите первое слово из имени департамента, для тех
+департаментов, у которых название состоит больше, чем из одного 
+слова.*/
+SELECT department_name, 
+substr(department_name, 1, instr(department_name, ' ')) 
+from departments;
+     
+--4. Получите имена сотрудников без первой и последней буквы в имени.
+SELECT first_name||' '||last_name,
+substr(first_name, 2, length(first_name)-2)
+from employees;
+
+/*5. Получите список всех сотрудников, у которых в значении job_id после 
+знака '_' как минимум 3 символа, но при этом это значение после '_' не 
+равно 'CLERK'.*/
+SELECT *
+FROM employees
+WHERE SUBSTR(job_id, INSTR(job_id, '_') + 1) != 'CLERK'
+AND LENGTH(SUBSTR(job_id, INSTR(job_id, '_') + 1)) >= 3;
+
+/*6. Получите список всех сотрудников, которые пришли на работу в 
+первый день любого месяца.*/
+SELECT *
+FROM employees
+WHERE TO_CHAR(hire_date, 'DD') = '01';
+
+/*7. Получите список всех сотрудников, которые пришли на работу в 
+1998ом году.*/
+SELECT *
+FROM employees
+WHERE TO_CHAR(hire_date, 'YY') = '98';
+
+/*8. Покажите завтрашнюю дату в формате:
+Tomorrow is twenty seventh day of April*/
+
+SELECT 'Tomorrow is ' || TO_CHAR(SYSDATE + 1, 'fmddth "day of" Month') AS Tomorrow_Date
+FROM dual;
+
+/*9. Выведите имя сотрудника и дату его прихода на работу в формате: 
+21st of June, 2007*/
+
+SELECT first_name || last_name, to_char(hire_date, 'DDth "of" Month, YYYY') from employees;
+
+/*10.Получите список работников с увеличенными зарплатами на 20%. 
+Зарплату показать в формате: $28,800.00*/
+
+SELECT first_name || last_name, salary, to_char(salary + (salary/100)*20, '$99,999.99') as  salary_new, (salary/100)*20 as salary_perc
+from employees;
+
+/*11.Выведите актуальную дату (нынешнюю), + секунда, + минута, + час, + 
+день, + месяц, + год. (Всё это по отдельности прибавляется к 
+актуальной дате.*/
+
+SELECT 
+    'секунды: ' || TO_CHAR(SYSDATE, 'SS') || ', ' ||
+    'минуты: ' || TO_CHAR(SYSDATE, 'MI') || ', ' ||
+    'часы: ' || TO_CHAR(SYSDATE, 'HH24') || ', ' ||
+    'день: ' || TO_CHAR(SYSDATE, 'DD') || ', ' ||
+    'месяц: ' || TO_CHAR(SYSDATE, 'MM') || ', ' ||
+    'год: ' || TO_CHAR(SYSDATE, 'YY') AS formatted_datetime
+FROM dual;
+
+/*12.Выведите имя сотрудника, его з/п и новую з/п, которая равна старой 
+плюс это значение текста «$12,345.55».*/
+
+SELECT 
+    first_name || ' ' || last_name AS employee_name,
+    salary AS current_salary,
+    salary + 12345.55 AS new_salary
+FROM employees;
