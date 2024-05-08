@@ -1,0 +1,145 @@
+/*1. Выведите информацию о регионах и количестве сотрудников в каждом 
+регионе.*/
+select region_name,
+count(*)
+from employees e
+JOIN departments d on (e.department_id = d.department_id)
+join locations l on (d.location_id = l.location_id)
+join countries c on (l.country_id = c.country_id)
+join regions r on (c.region_id = r.region_id)
+group by region_name;
+
+
+/*2. Выведите детальную информацию о каждом сотруднике: имя, 
+фамилия, название департамента, job_id, адрес, страна и регион*/
+
+SELECT 
+    e.first_name,
+    e.last_name,
+    d.department_name,
+    e.job_id,
+    c.country_name,
+    r.region_name,
+    l.street_address
+from employees e
+inner JOIN departments d on (e.department_id = d.department_id)
+inner JOIN locations l on (d.location_id = l.location_id)
+inner JOIN countries c on (l.country_id = c.country_id)
+inner JOIN regions r on (c.region_id = r.region_id);
+
+/*3. Выведите информацию о имени менеджеров которые имеют в 
+подчинении больше 6ти сотрудников, а также выведите количество 
+сотрудников, которые им подчиняются.*/
+
+SELECT
+    e.first_name,
+    e.last_name,
+    e.manager_id,
+    COUNT(*)
+FROM
+    employees e
+INNER JOIN
+    employees ee ON (e.employee_id = ee.manager_id)
+GROUP BY
+    e.first_name,
+    e.last_name,
+    e.manager_id
+HAVING
+    COUNT(*) > 6;
+
+/*. Выведите информацию о названии всех департаментов и о количестве 
+работников, если в департаменте работают больше 30ти сотрудников.
+Используйте технологию «USING» для объединения по id 
+департамента.*/
+
+SELECT 
+    d.department_name,
+    count(*)
+from departments d
+    INNER JOIN employees e USING ( department_id)
+    GROUP BY d.department_name
+    having count(*) > 30;
+
+/*5. Выведите названия всех департаментов, в которых нет ни одного 
+сотрудника.*/
+
+SELECT d.department_name
+from departments d
+left JOIN employees e on (e.department_id = d.department_id)
+WHERE 
+    e.department_id IS NULL;
+
+/*6. Выведите всю информацию о сотрудниках, менеджеры которых 
+устроились на работу в 89 ом году, но при это сами работники 
+устроились на работу до 89 года.*/
+
+SELECT 
+    e.first_name,
+    e.last_name,
+    e.hire_date,
+    e.manager_id
+FROM 
+    employees e
+INNER JOIN 
+    employees m ON e.manager_id = m.employee_id
+WHERE 
+    m.hire_date LIKE '%89' -- условие для менеджеров, устроившихся в 1989 году
+    AND e.hire_date NOT LIKE '%89'; -- условие для сотрудников, устроившихся до 1989 года
+
+/*7. Выведите название страны и название региона этой страны, используя 
+natural join.*/
+
+SELECT 
+    country_name,
+    region_name
+from countries
+NATURAL JOIN regions;
+
+/*8. Выведите имена, фамилии и з/п сотрудников, которые получают 
+меньше, чем (минимальная з/п по их специальности + 1000).*/
+SELECT 
+    first_name,
+    last_name,
+    salary
+    
+from employees e
+ JOIN jobs j 
+ on (e.job_id = j.job_id
+and salary   <  min_salary + 1000)
+;
+
+/*9. Выведите уникальные имена и фамилии сотрудников, названия стран, 
+в которых они работают. Также выведите информацию о сотрудниках, 
+о странах которых нет информации. А также выведите все страны, в 
+которых нет сотрудников компании.*/
+
+SELECT 
+    DISTINCT(e.first_name),
+    e.last_name,
+    c.country_name
+from employees e
+full OUTER join departments d on (e.department_id = d.department_id)
+full OUTER join locations l on (l.location_id = d.location_id)
+full OUTER join countries c on (l.country_id = c.country_id);
+    
+/*10.Выведите имена и фамилии всех сотрудников, а также названия стран, 
+которые мы получаем при объединении работников со всеми 
+странами без какой-либо логики.*/
+
+SELECT first_name,last_name, country_name
+from employees CROSS JOIN countries;
+
+/*11.Решите задачу № 1, используя Oracle Join синтаксис.*/
+ select region_name, count(*)
+ from employees e, departments d, locations l, countries c, regions r
+ where (e.department_id = d.department_id and d.location_id = l.location_id
+ and l.country_id = c.country_id and c.region_id = r.region_id)
+ GROUP by region_name;
+ 
+/*12.Решите задачу № 5, используя Oracle Join синтаксис*/
+
+select department_name
+from employees e, departments d
+where e.department_id (+) = d.department_id 
+and first_name is null;
+
