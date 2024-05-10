@@ -1,0 +1,48 @@
+/*1.Выведите всю информацию о сотрудниках, с самым длинным именем.*/
+select *
+from employees
+where length(first_name) = (select MAX(length(first_name))from employees);
+
+/*2. Выведите всю информацию о сотрудниках, с зарплатой большей 
+средней зарплаты всех сотрудников.*/
+SELECT *
+FROM employees
+WHERE salary > (SELECT AVG(salary) from employees);
+
+/*4. Выведите всю информацию о сотрудниках, у которых менеджер 
+получает зарплату больше 15000.*/
+SELECT e.*
+FROM employees e
+inner JOIN employees ee on (e.manager_id = ee.manager_id)
+where ee.salary > 15000;
+
+/*6. Выведите всю информацию о сотрудниках, которые не являются 
+менеджерами.*/
+SELECT *
+FROM employees 
+where manager_id is NULL;
+
+/*7. Выведите всю информацию о менеджерах, которые имеют в 
+подчинении больше 6ти сотрудников.*/
+SELECT *
+FROM employees
+WHERE manager_id IN (
+    SELECT manager_id
+    FROM employees
+    WHERE manager_id IS NOT NULL
+    GROUP BY manager_id
+    HAVING COUNT(*) > 6
+);
+
+/*8. Выведите всю информацию о сотрудниках, которые работают в 
+департаменте с названием IT .*/
+SELECT * 
+from employees e
+inner join departments d on (e.department_id = d.department_id)
+where d.department_name = 'IT';
+
+SELECT * 
+FROM employees
+WHERE department_id IN (SELECT department_id FROM departments WHERE department_name = 'IT');
+
+
