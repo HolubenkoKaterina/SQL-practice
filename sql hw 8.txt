@@ -1,0 +1,81 @@
+/*1.Выведите в одном репорте информацию о суммах з/п групп, 
+объединённых по id менеджера, по job_id, по id департамента. Репорт 
+должен содержать 4 столбца: id менеджера, job_id, id департамента, 
+суммированная з/п.*/
+
+SELECT manager_id, job_id, department_id, SUM(salary) AS total_salary
+FROM employees
+GROUP BY manager_id, job_id, department_id
+
+UNION 
+
+SELECT NULL AS manager_id, job_id, department_id, SUM(salary) AS total_salary
+FROM employees
+GROUP BY job_id, department_id
+
+ORDER BY manager_id, job_id, department_id;
+
+
+/*2. Выведите id тех департаментов, где работает менеджер № 100 и не 
+работают менеджеры № 145, 201.*/
+select department_id
+from employees
+where manager_id = 100
+union 
+select department_id
+from employees
+where manager_id not in (145, 201);
+
+/*3. Используя SET операторы и не используя логические операторы, 
+выведите уникальную информацию о именах, фамилиях и з/п 
+сотрудников, второй символ в именах которых буква «а», и фамилия 
+содержит букву «s» вне зависимости от регистра. Отсортируйте 
+результат по з/п по убыванию.*/
+
+SELECT first_name, last_name, salary
+FROM employees
+WHERE first_name LIKE '_a%' 
+INTERSECT 
+SELECT first_name, last_name, salary
+FROM employees
+WHERE LOWER(last_name) LIKE '%s%'
+ORDER BY salary DESC;
+
+/*4. Используя SET операторы и не используя логические операторы, 
+выведите информацию о id локаций, почтовом коде и городе для 
+локаций, которые находятся в Италии или Германии. А также для 
+локаций, почтовый код которых содержит цифру «9».*/
+
+select location_id, null postal_code, null city
+from locations l
+join countries c on (c.country_id = l.country_id)
+where country_name in ('Italy', 'Germany')
+UNION
+select location_id, postal_code, city
+from locations
+where postal_code like '%9%';
+
+/*5. Используя SET операторы и не используя логические операторы, 
+выведите всю уникальную информацию для стран, длина имён 
+которых больше 8 символов. А также для стран, которые находятся не в 
+европейском регионе. Столбцы аутпута должны называться id, country, 
+region. Аутпут отсортируйте по названию стран по убывающей*/
+
+SELECT c.country_id, c.country_name, c.region_id, NULL AS region_name 
+FROM countries c
+WHERE LENGTH(c.country_name) > 8
+
+UNION
+
+SELECT NULL, NULL, r.region_id, r.region_name
+FROM regions r 
+JOIN countries c ON r.region_id = c.region_id
+WHERE r.region_name != 'Europe'
+ORDER BY country_name DESC;
+
+
+
+
+
+
+
