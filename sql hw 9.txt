@@ -1,0 +1,81 @@
+/*1.Перепишите и запустите данный statemenet для создания таблицы 
+locations2, которая будет содержать такие же столбцы, что и locations:
+CREATE TABLE locations2 AS (SELECT * FROM locations WHERE 1=2);*/
+
+CREATE TABLE locations2 AS (SELECT * FROM locations WHERE 1=2);
+select * from locations2;
+
+/*2. Добавьте в таблицу locations2 2 строки с информацией о id локации, 
+адресе, городе, id страны. Пусть данные строки относятся к стране 
+Италия.
+3. Совершите commit.*/
+
+insert INTO locations2  (location_id, street_address, city, country_id) 
+values (24, '39-Danylishinih', initcap('milan'),initcap( 'it'));
+commit;
+
+/*4. Добавьте в таблицу locations2 ещё 2 строки, не используя 
+перечисления имён столбцов, в которые заносится информация. Пусть 
+данные строки относятся к стране Франция. При написании значений, 
+где возможно, используйте функции.
+5. Совершите commit.*/
+INSERT into locations2 values
+(2111, '55-55-55 France', null, initcap('paris'), null, upper('fr'));
+INSERT into locations2 values
+(2112, '11-11-11 France', null, initcap('paris'), null, upper('fr'));
+commit;
+
+/*6. Добавьте в таблицу locations2 строки из таблицы locations, в которых 
+длина значения столбца state_province больше 9.
+7. Совершите commit.*/
+INSERT INTO locations2 (location_id, street_address, postal_code, city, state_province, country_id)
+SELECT location_id, street_address, postal_code, city, state_province, country_id
+FROM locations
+WHERE LENGTH(state_province) > 9;
+commit;
+
+/*8. Перепишите и запустите данный statemenet для создания таблицы 
+locations4europe, которая будет содержать такие же столбцы, что и 
+locations:*/
+CREATE TABLE locations4europe AS (SELECT * FROM locations WHERE 1=2);
+
+/*11.В таблице locations2 измените почтовый код на любое значение в тех 
+строках, где сейчас нет информации о почтовом коде.
+12.Совершите rollback.*/
+select * from locations2;
+UPDATE locations2 set postal_code = 4
+where postal_code is null;
+ROLLBACK;
+
+/*13.В таблице locations2 измените почтовый код в тех строках, где сейчас 
+нет информации о почтовом коде. Новое значение должно быть кодом
+из таблицы locations для строки с id 2600.
+14.Совершите commit.*/
+update locations2 set postal_code =
+    (select postal_code 
+    from locations
+    where location_id = 2600)
+where  postal_code is null;
+COMMIT;
+
+/*15.Удалите строки из таблицы locations2, где id страны «IT».
+16.Создайте первый savepoint.*/
+select * from locations2;
+
+DELETE  from locations2
+where country_id = initcap('it');
+SAVEPOINT a;
+
+/*17.В таблице locations2 измените адрес в тех строках, где id локации 
+больше 2500. Новое значение должно быть «Sezam st. 18»
+18.Создайте второй savepoint.*/
+update locations2 set street_address = 'Sezam st. 18'
+where location_id > 2500;
+SAVEPOINT b;
+
+/*19.Удалите строки из таблицы locations2, где адрес равен «Sezam st. 18».
+20.Откатите изменения до первого savepoint.
+21.Совершите commit*/
+delete from locations2 where street_address = 'Sezam st. 18';
+ROLLBACK to SAVEPOINT a;
+COMMIT;
