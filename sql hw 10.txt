@@ -1,0 +1,76 @@
+/*1.Создать таблицу friends с помощью subquery так, чтобы она после 
+создания содержала значения следующих столбцов из таблицы 
+employees: employee_id, first_name, last_name для тех строк, где 
+имеются комиссионные. Столбцы в таблице friends должны называться 
+id, name, surname .*/
+CREATE TABLE friends as
+    (SELECT employee_id as id , first_name as name, last_name as surname FROM employees WHERE commission_pct is NOT NULL);
+SELECT * from friends;
+
+/*2. Добавить в таблицу friends новый столбец email .*/
+ALTER table friends ADD email VARCHAR2 (50);
+SELECT * from friends;
+
+/*3. Изменить столбец email так, чтобы его значение по умолчанию было 
+«no email».*/
+ALTER TABLE friends MODIFY (email VARCHAR2(50) DEFAULT 'no email');
+SELECT * from friends;
+
+/*4. Проверить добавлением новой строки, работает ли дефолтное 
+значение столбца email.*/
+INSERT INTO friends (name, surname, email) VALUES ('katya', 'fedorova', 'kfedorova');
+
+/*5. Изменить название столбца с id на friends_id .*/
+ALTER TABLE friends RENAME COLUMN id TO friends_id;
+
+/*6. Удалить таблицу friends.*/
+DROP TABLE friends;
+
+/*7. Создать таблицу friends со следующими столбцами: id, name, surname, 
+email, salary, city, birthday. У столбцов salary и birthday должны быть 
+значения по умолчанию.*/
+CREATE TABLE friends (id NUMBER, name VARCHAR2(50), surname VARCHAR2(50), email VARCHAR2(50),
+salary NUMBER DEFAULT 0, city VARCHAR2(50), birthday date DEFAULT to_date ('01-JUN-00'));
+select * from friends;
+
+/*8. Добавить 1 строку в таблицу friends со всеми значениями.*/
+INSERT INTO friends (id, name , surname , email ,
+salary, city , birthday ) VALUES (1, 'katya', 'fedorova', 'kfedorova', 50000, 'kiev', '14-oct-2024');
+select * from friends;
+
+/*. Добавить 1 строку в таблицу friends со всеми значениями кроме salary
+и birthday.
+10.Совершить commit.*/
+INSERT INTO friends (id, name , surname , email ,
+ city  ) VALUES (2, 'alla', 'fedorova', 'lfedorova',  'kiev');
+select * from friends;
+COMMIT;
+
+/*11.Удалить столбец salary.*/
+ALTER TABLE friends drop column salary;
+select * from friends;
+
+/*12.Сделать столбец email неиспользуемым (unused).*/
+ALTER TABLE friends SET  unused column email;
+select * from friends;
+
+/*13.Сделать столбец birthday неиспользуемым (unused).*/
+ALTER TABLE friends set unused column birthday;
+select * from friends;
+
+/*14.Удалить из таблицы friends неиспользуемые столбцы.*/
+ALTER TABLE friends drop unused COLUMNS;
+select * from friends;
+
+/*15.Сделать таблицу friends пригодной только для чтения.*/
+alter TABLE friends read only;
+
+/*16.Проверить предыдущее действие любой DML командой*/
+DELETE  from friends where id = 2;
+
+/*17.Опустошить таблицу friends.*/
+ALTER TABLE friends READ WRITE;
+TRUNCATE TABLE friends;
+
+/*18.Удалить таблицу friends*/
+DROP TABLE friends;
